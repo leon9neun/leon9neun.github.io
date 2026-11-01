@@ -1,0 +1,72 @@
+---
+/**
+ * @prop {string} [href] - renders an <a> when set, otherwise a <button>
+ * @prop {'pill' | 'square'} [variant='pill']
+ * @prop {'button' | 'submit' | 'reset'} [type='button'] - only for <button>
+ * @prop {boolean} [disabled=false]
+ * Other attributes (aria-*, data-*) are passed to the element.
+ */
+const { href, variant = 'pill', type = 'button', disabled = false, ...attrs } = Astro.props;
+const isLink = Boolean(href);
+---
+
+{
+  isLink ? (
+    <a
+      class="button"
+      data-variant={variant}
+      href={disabled ? undefined : href}
+      aria-disabled={disabled ? 'true' : undefined}
+      {...attrs}
+    >
+      <slot />
+    </a>
+  ) : (
+    <button class="button" data-variant={variant} type={type} disabled={disabled} {...attrs}>
+      <slot />
+    </button>
+  )
+}
+
+<style>
+  .button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    border: 1px solid var(--color-ink-black);
+    background: transparent;
+    color: var(--color-ink-black);
+    font-family: inherit;
+    font-weight: var(--font-weight-regular);
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .button[data-variant='pill'] {
+    padding: var(--spacing-8) 20px;
+    border-radius: var(--radius-buttons);
+    font-size: var(--text-body-md);
+    line-height: var(--leading-body-md);
+  }
+
+  .button[data-variant='square'] {
+    padding: 4px var(--spacing-16);
+    border-radius: var(--radius-md);
+    font-size: var(--text-body-sm);
+    line-height: var(--leading-body-sm);
+  }
+
+  .button:hover {
+    background: var(--color-ink-black);
+    color: var(--color-parchment);
+  }
+
+  .button:disabled,
+  .button[aria-disabled='true'] {
+    border-color: var(--color-ash);
+    color: var(--color-ash);
+    background: transparent;
+    cursor: not-allowed;
+  }
+</style>

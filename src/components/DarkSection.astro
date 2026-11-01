@@ -1,0 +1,21 @@
+---
+// Full-bleed inversion band. Use at most once per page (see docs/design.md).
+---
+
+<section class="dark-section">
+  <div class="container">
+    <slot />
+  </div>
+</section>
+
+<style>
+  .dark-section {
+    padding-block: var(--spacing-80);
+    background: var(--color-aubergine-black);
+    color: var(--color-pure-white);
+  }
+
+  .dark-section :global(:focus-visible) {
+    outline-color: var(--color-pure-white);
+  }
+</style>

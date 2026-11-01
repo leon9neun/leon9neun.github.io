@@ -1,0 +1,186 @@
+---
+import { SITE, NAV } from '@lib/site.js';
+
+import Button from '@components/Button.astro';
+
+const pathname = Astro.url.pathname.replace(/\/$/, '') || '/';
+const isCurrent = (href) =>
+  href === '/' ? pathname === '/' : pathname === href || pathname.startsWith(`${href}/`);
+
+const home = NAV.find((item) => item.role === 'home');
+const links = NAV.filter((item) => item.role === 'link');
+const cta = NAV.find((item) => item.role === 'cta');
+---
+
+<header class="site-header" data-component="site-header">
+  <div class="container header-bar">
+    <a class="logo" href={home.href} aria-current={isCurrent(home.href) ? 'page' : undefined}>
+      <svg width="8" height="8" viewBox="0 0 8 8" aria-hidden="true">
+        <path d="M4 0l4 4-4 4-4-4z" fill="currentColor"></path>
+      </svg>
+      <span>{SITE.name}</span>
+    </a>
+
+    <button
+      class="menu-button"
+      type="button"
+      aria-expanded="false"
+      aria-controls="site-nav"
+      data-menu-button
+      hidden
+    >
+      Menü
+    </button>
+
+    <nav id="site-nav" class="site-nav" aria-label="Hauptnavigation" data-menu-nav>
+      <ul class="nav-links">
+        {
+          links.map((item) => (
+            <li>
+              <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      {
+        cta && (
+          <Button href={cta.href} aria-current={isCurrent(cta.href) ? 'page' : undefined}>
+            {cta.label}
+          </Button>
+        )
+      }
+    </nav>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    border-bottom: 1px solid var(--color-bone);
+  }
+
+  .header-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 64px;
+    column-gap: var(--spacing-24);
+  }
+
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-8);
+    min-height: 44px;
+    font-size: var(--text-body-md);
+    text-decoration: none;
+  }
+
+  .menu-button {
+    min-height: 44px;
+    padding: 4px var(--spacing-16);
+    border: 1px solid var(--color-ink-black);
+    border-radius: var(--radius-md);
+    background: transparent;
+    color: var(--color-ink-black);
+    font-size: var(--text-body-sm);
+    cursor: pointer;
+  }
+
+  .menu-button[hidden] {
+    display: none;
+  }
+
+  .site-nav {
+    display: flex;
+    flex-basis: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-8);
+    padding-block: var(--spacing-16);
+  }
+
+  /* With JavaScript the menu starts closed on small screens. Without it, the links stay visible. */
+  .site-header[data-state='closed'] .site-nav {
+    display: none;
+  }
+
+  .nav-links {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-8);
+  }
+
+  .nav-links a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    font-size: var(--text-body-sm);
+    text-decoration: none;
+  }
+
+  .nav-links a:hover,
+  .logo:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  .nav-links a[aria-current='page'],
+  .logo[aria-current='page'] {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  @media (min-width: 768px) {
+    .menu-button {
+      display: none;
+    }
+
+    .site-nav,
+    .site-header[data-state='closed'] .site-nav {
+      display: flex;
+      flex: 1;
+      flex-basis: auto;
+      flex-direction: row;
+      align-items: center;
+      padding-block: 0;
+    }
+
+    .nav-links {
+      flex-direction: row;
+      gap: var(--spacing-16);
+      margin-inline: auto;
+    }
+  }
+</style>
+
+<script>
+  function initSiteHeader(root) {
+    const button = root.querySelector('[data-menu-button]');
+    const nav = root.querySelector('[data-menu-nav]');
+    if (!button || !nav) return;
+
+    function setOpen(isOpen) {
+      root.dataset.state = isOpen ? 'open' : 'closed';
+      button.setAttribute('aria-expanded', String(isOpen));
+    }
+
+    button.hidden = false;
+    setOpen(false);
+
+    button.addEventListener('click', () => {
+      setOpen(button.getAttribute('aria-expanded') !== 'true');
+    });
+
+    root.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && button.getAttribute('aria-expanded') === 'true') {
+        setOpen(false);
+        button.focus();
+      }
+    });
+  }
+
+  document.querySelectorAll('[data-component="site-header"]').forEach(initSiteHeader);
+</script>

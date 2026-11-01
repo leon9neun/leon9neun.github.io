@@ -1,0 +1,22 @@
+---
+/**
+ * @prop {'category' | 'technology' | 'date'} [variant='category']
+ */
+const { variant = 'category' } = Astro.props;
+---
+
+<span class="tag" data-variant={variant}><slot /></span>
+
+<style>
+  .tag {
+    display: inline-block;
+    padding: 2px var(--spacing-8);
+    border-radius: var(--radius-badges);
+    background: var(--color-pure-white);
+    color: var(--color-ink-black);
+    font-size: var(--text-caption);
+    line-height: var(--leading-caption);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+</style>

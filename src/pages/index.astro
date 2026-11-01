@@ -1,0 +1,14 @@
+---
+import { SITE } from '@lib/site.js';
+
+import BaseLayout from '@layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title={`${SITE.name} · Portfolio`}
+  description="[Ein Satz: wer, was, wofür die Seite da ist. Max. 155 Zeichen.]"
+>
+  <div class="container">
+    <h1>{SITE.name}</h1>
+  </div>
+</BaseLayout>

@@ -1,0 +1,91 @@
+---
+import { SITE } from '@lib/site.js';
+---
+
+<span class="copy-email" data-component="copy-email" data-state="idle">
+  <a href={`mailto:${SITE.email}`} data-copy-fallback>{SITE.email}</a>
+  <button type="button" data-copy-button hidden>{SITE.email}</button>
+  <span class="copy-hint" role="status" aria-live="polite">Klicken zum Kopieren</span>
+</span>
+
+<style>
+  .copy-email {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    column-gap: var(--spacing-8);
+    color: var(--color-ink-black);
+  }
+
+  .copy-email a,
+  .copy-email button {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-decoration: none;
+    user-select: text;
+  }
+
+  .copy-email button {
+    cursor: pointer;
+  }
+
+  .copy-email button[hidden],
+  .copy-email a[hidden] {
+    display: none;
+  }
+
+  .copy-email a:hover,
+  .copy-email button:hover {
+    text-decoration: underline;
+  }
+
+  .copy-hint {
+    color: var(--color-dim);
+    font-size: var(--text-caption);
+    line-height: var(--leading-caption);
+  }
+
+  .copy-email[data-state='copied'] .copy-hint,
+  .copy-email[data-state='error'] .copy-hint {
+    color: var(--color-ink-black);
+  }
+</style>
+
+<script>
+  import { copyToClipboard } from '@lib/clipboard.js';
+
+  const COPY_FEEDBACK_MS = 2000;
+
+  function initCopyEmail(root) {
+    const button = root.querySelector('[data-copy-button]');
+    const fallback = root.querySelector('[data-copy-fallback]');
+    const hint = root.querySelector('.copy-hint');
+    if (!button || !fallback || !hint) return;
+
+    const idleText = hint.textContent;
+    let resetTimer;
+
+    fallback.hidden = true;
+    button.hidden = false;
+
+    button.addEventListener('click', async () => {
+      const isCopied = await copyToClipboard(button.textContent.trim());
+      root.dataset.state = isCopied ? 'copied' : 'error';
+      hint.textContent = isCopied ? 'Kopiert' : 'Kopieren nicht möglich';
+
+      clearTimeout(resetTimer);
+      resetTimer = setTimeout(() => {
+        root.dataset.state = 'idle';
+        hint.textContent = idleText;
+      }, COPY_FEEDBACK_MS);
+    });
+  }
+
+  document.querySelectorAll('[data-component="copy-email"]').forEach(initCopyEmail);
+</script>

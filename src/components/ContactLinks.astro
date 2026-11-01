@@ -1,0 +1,77 @@
+---
+import { SITE } from '@lib/site.js';
+
+/**
+ * @prop {'list' | 'compact'} [variant='list'] - 'list' shows labels and mail, 'compact' only LinkedIn and GitHub
+ */
+const { variant = 'list' } = Astro.props;
+
+const links = [
+  { label: 'Mail', text: SITE.email, href: `mailto:${SITE.email}`, isExternal: false },
+  { label: 'LinkedIn', text: 'LinkedIn', href: SITE.linkedin, isExternal: true },
+  { label: 'GitHub', text: 'GitHub', href: SITE.github, isExternal: true },
+];
+const visibleLinks = variant === 'compact' ? links.filter((link) => link.isExternal) : links;
+---
+
+<ul class="contact-links" data-variant={variant}>
+  {
+    visibleLinks.map((link) => (
+      <li>
+        {variant === 'list' && <span class="link-label">{link.label}</span>}
+        <a
+          href={link.href}
+          target={link.isExternal ? '_blank' : undefined}
+          rel={link.isExternal ? 'noopener noreferrer' : undefined}
+        >
+          {variant === 'list' && link.isExternal ? link.href : link.text}
+        </a>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .contact-links a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: var(--color-ink-black);
+    text-decoration: none;
+  }
+
+  .contact-links a:hover {
+    text-decoration: underline;
+  }
+
+  .contact-links[data-variant='list'] {
+    display: grid;
+    gap: var(--spacing-16);
+  }
+
+  .contact-links[data-variant='list'] li {
+    display: grid;
+    gap: var(--element-gap);
+    padding: var(--card-padding);
+    border: 1px solid var(--color-bone);
+    border-radius: var(--radius-cards);
+    background: var(--color-pure-white);
+    font-size: var(--text-body-lg);
+    line-height: var(--leading-body-lg);
+  }
+
+  .link-label {
+    color: var(--color-dim);
+    font-size: var(--text-caption);
+    line-height: var(--leading-caption);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+
+  .contact-links[data-variant='compact'] {
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: var(--spacing-16);
+    font-size: var(--text-body-sm);
+  }
+</style>
