@@ -39,7 +39,6 @@ Für neue Inhalte muss kein Code geändert werden.
 Die Felder jeder Datei werden beim Build geprüft. Fehlt ein Pflichtfeld, bricht der Build mit einer Fehlermeldung ab.
 
 ## Struktur
-
 ```
 src/
 ├─ components/   wiederverwendbare Bausteine
