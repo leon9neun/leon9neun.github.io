@@ -2,7 +2,7 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [change]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -14,7 +14,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v7
       - name: Install, build, and upload site
         uses: withastro/action@v6
