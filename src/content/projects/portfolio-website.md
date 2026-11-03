@@ -8,7 +8,7 @@ date: "2026-11"
 ---
 
 ## Idee
-Meine Projekte und Erfahrungen an einem Ort hosten.  
+Meine Projekte und Erfahrungen an einem Ort zusammenfassen.  
 
 
 ## Coming soon
