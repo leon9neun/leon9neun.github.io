@@ -1,0 +1,72 @@
+---
+import QRCode from 'qrcode';
+
+import { SITE, CONTACT_PAGE } from '@lib/site.js';
+
+/**
+ * QR code with a mailto link to the site's address, created as SVG at build time.
+ * @prop {string} [caption] - text below the code
+ */
+const { caption } = Astro.props;
+const svg = await QRCode.toString(`mailto:${SITE.email}`, {
+  type: 'svg',
+  margin: 0,
+  errorCorrectionLevel: 'M',
+});
+---
+
+<figure class="qr-code">
+  <div
+    class="qr-image"
+    role="img"
+    aria-label={`${CONTACT_PAGE.qrAlt} ${SITE.email}`}
+    set:html={svg}
+  />
+  {caption && <figcaption class="qr-caption">{caption}</figcaption>}
+  <p class="qr-email">{SITE.email}</p>
+</figure>
+
+<style>
+  .qr-code {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-16);
+    margin: 0;
+    padding: var(--card-padding);
+    border: 1px solid var(--color-bone);
+    border-radius: var(--radius-cards);
+    background: var(--color-pure-white);
+  }
+
+  .qr-image {
+    width: 100%;
+    max-width: calc(2 * var(--spacing-112));
+  }
+
+  /* The generator writes black and white, the colors come from the tokens instead. */
+  .qr-image :global(svg) {
+    width: 100%;
+    height: auto;
+  }
+
+  .qr-image :global(path[fill]) {
+    fill: var(--color-pure-white);
+  }
+
+  .qr-image :global(path[stroke]) {
+    stroke: var(--color-ink-black);
+  }
+
+  .qr-caption {
+    font-size: var(--text-body-sm);
+    line-height: var(--leading-body-sm);
+    color: var(--color-dim);
+  }
+
+  .qr-email {
+    font-size: var(--text-body-sm);
+    line-height: var(--leading-body-sm);
+    overflow-wrap: anywhere;
+  }
+</style>

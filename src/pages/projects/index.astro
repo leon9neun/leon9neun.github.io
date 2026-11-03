@@ -1,0 +1,77 @@
+---
+import { getCollection } from 'astro:content';
+
+import { PROJECTS_PAGE } from '@lib/site.js';
+import { stripHeadingIds } from '@lib/stripHeadingIds.js';
+
+import DarkSection from '@components/DarkSection.astro';
+import ProjectCard from '@components/ProjectCard.astro';
+import RollingTitle from '@components/RollingTitle.astro';
+import SectionLabel from '@components/SectionLabel.astro';
+import BaseLayout from '@layouts/BaseLayout.astro';
+
+const projects = (await getCollection('projects')).sort((a, b) =>
+  b.data.date.localeCompare(a.data.date),
+);
+---
+
+<BaseLayout title={PROJECTS_PAGE.metaTitle} description={PROJECTS_PAGE.metaDescription}>
+  <div class="container intro">
+    <header class="intro-header">
+      <SectionLabel>{PROJECTS_PAGE.label}</SectionLabel>
+      <RollingTitle>{PROJECTS_PAGE.heading}</RollingTitle>
+      <p class="intro-text">{PROJECTS_PAGE.text}</p>
+    </header>
+  </div>
+
+  <DarkSection>
+    <h2 class="visually-hidden">Projekte</h2>
+    <ul class="card-grid">
+      {
+        projects.map((project) => (
+          <li>
+            <ProjectCard project={project}>
+              <Fragment set:html={stripHeadingIds(project.rendered?.html ?? '')} />
+            </ProjectCard>
+          </li>
+        ))
+      }
+    </ul>
+  </DarkSection>
+</BaseLayout>
+
+<style>
+  .intro {
+    padding-block: var(--spacing-64);
+  }
+
+  .intro-header {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-16);
+  }
+
+  .intro-text {
+    max-width: 60ch;
+    font-size: var(--text-body-lg);
+    line-height: var(--leading-body-lg);
+  }
+
+  .card-grid {
+    display: grid;
+    gap: var(--spacing-24);
+  }
+
+  @media (min-width: 768px) {
+    .card-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    /* The opened card takes the first row, the others follow below in the 3-column grid. */
+    .card-grid > li:has(:global(.project-card[data-state='expanded'])) {
+      grid-column: 1 / -1;
+      order: -1;
+    }
+  }
+</style>

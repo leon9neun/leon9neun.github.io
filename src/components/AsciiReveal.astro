@@ -1,0 +1,77 @@
+---
+/**
+ * Photo made of characters. While the pointer is over it, the real photo shows through
+ * a soft spot that follows the pointer (see docs Funktionen, ASCII Reveal).
+ * Without JavaScript the plain photo is shown. With prefers-reduced-motion only the characters are drawn.
+ * @prop {string} src - image in public/, e.g. "/images/bew_bild_2.jpg"
+ * @prop {string} alt - description of the image
+ * @prop {'light' | 'dark'} [variant='dark'] - 'dark' is for Aubergine Black (light characters)
+ */
+const { src, alt, variant = 'dark' } = Astro.props;
+---
+
+<figure class="ascii-reveal" data-variant={variant}>
+  <canvas
+    class="reveal-canvas"
+    data-component="ascii-reveal"
+    data-src={src}
+    role="img"
+    aria-label={alt}></canvas>
+  <noscript><img class="reveal-fallback" src={src} alt={alt} width="1790" height="2430" /></noscript>
+</figure>
+
+<style>
+  .ascii-reveal {
+    width: 100%;
+    margin: 0;
+  }
+
+  /* The characters take these two colors (read by the script). */
+  .ascii-reveal[data-variant='light'] {
+    --ascii-ink: var(--color-ink-black);
+    --ascii-ink-dim: var(--color-dim);
+  }
+
+  .ascii-reveal[data-variant='dark'] {
+    --ascii-ink: var(--color-bone);
+    --ascii-ink-dim: var(--color-dim);
+  }
+
+  /* Until the script sets the exact size, the canvas already has the right shape. */
+  .reveal-canvas {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    aspect-ratio: 4 / 5;
+    cursor: crosshair;
+    /* vertical swipes still scroll the page */
+    touch-action: pan-y;
+  }
+
+  .reveal-fallback {
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-cards);
+  }
+
+  @media (scripting: none) {
+    .reveal-canvas {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  import { initAsciiReveal } from '@lib/asciiReveal.js';
+  import { prefersReducedMotion } from '@lib/motion.js';
+
+  function initReveal(root) {
+    try {
+      initAsciiReveal(root, { src: root.dataset.src, isStatic: prefersReducedMotion() });
+    } catch (error) {
+      if (import.meta.env.DEV) console.error(error);
+    }
+  }
+
+  document.querySelectorAll('[data-component="ascii-reveal"]').forEach(initReveal);
+</script>

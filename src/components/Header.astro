@@ -2,6 +2,7 @@
 import { SITE, NAV } from '@lib/site.js';
 
 import Button from '@components/Button.astro';
+import Diamond from '@components/Diamond.astro';
 
 const pathname = Astro.url.pathname.replace(/\/$/, '') || '/';
 const isCurrent = (href) =>
@@ -15,9 +16,7 @@ const cta = NAV.find((item) => item.role === 'cta');
 <header class="site-header" data-component="site-header">
   <div class="container header-bar">
     <a class="logo" href={home.href} aria-current={isCurrent(home.href) ? 'page' : undefined}>
-      <svg width="8" height="8" viewBox="0 0 8 8" aria-hidden="true">
-        <path d="M4 0l4 4-4 4-4-4z" fill="currentColor"></path>
-      </svg>
+      <Diamond />
       <span>{SITE.name}</span>
     </a>
 

@@ -1,0 +1,82 @@
+---
+/**
+ * Rotating globe made of characters, drawn on a canvas (see docs Funktionen).
+ * Needs JavaScript. Without it only the hint stays visible. With prefers-reduced-motion
+ * the globe is drawn once and does not move.
+ * @prop {string} label - description of the globe for screen readers
+ * @prop {string} [hint] - short caption below the globe
+ * @prop {'light' | 'dark'} [variant='light'] - 'dark' is for Aubergine Black (light characters)
+ * @prop {string} [maskSrc='/images/earth-water.png'] - land mask, land dark, water light
+ */
+const { label, hint, variant = 'light', maskSrc = '/images/earth-water.png' } = Astro.props;
+---
+
+<figure class="ascii-globe" data-variant={variant}>
+  <canvas
+    class="globe-canvas"
+    data-component="ascii-globe"
+    data-mask-src={maskSrc}
+    role="img"
+    aria-label={label}></canvas>
+  {hint && <figcaption class="globe-hint">{hint}</figcaption>}
+</figure>
+
+<style>
+  .ascii-globe {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-16);
+    width: 100%;
+    margin: 0;
+  }
+
+  /* The characters take these two colors (read by the script). */
+  .ascii-globe[data-variant='light'] {
+    --ascii-ink: var(--color-ink-black);
+    --ascii-ink-dim: var(--color-dim);
+  }
+
+  .ascii-globe[data-variant='dark'] {
+    --ascii-ink: var(--color-bone);
+    --ascii-ink-dim: var(--color-dim);
+  }
+
+  .globe-canvas {
+    display: block;
+    max-width: 100%;
+    cursor: grab;
+    user-select: none;
+    /* vertical swipes still scroll the page, horizontal ones turn the globe */
+    touch-action: pan-y;
+  }
+
+  .globe-canvas[data-state='dragging'] {
+    cursor: grabbing;
+  }
+
+  .globe-hint {
+    font-size: var(--text-caption);
+    line-height: var(--leading-caption);
+    color: var(--color-dim);
+  }
+
+  .ascii-globe[data-variant='dark'] .globe-hint {
+    color: var(--color-ash);
+  }
+</style>
+
+<script>
+  import { initGlobe } from '@lib/globe.js';
+  import { prefersReducedMotion } from '@lib/motion.js';
+
+  function initAsciiGlobe(root) {
+    try {
+      initGlobe(root, { maskSrc: root.dataset.maskSrc, isStatic: prefersReducedMotion() });
+    } catch (error) {
+      if (import.meta.env.DEV) console.error(error);
+    }
+  }
+
+  document.querySelectorAll('[data-component="ascii-globe"]').forEach(initAsciiGlobe);
+</script>

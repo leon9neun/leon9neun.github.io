@@ -1,0 +1,77 @@
+---
+import AsciiPhoto from '@components/AsciiPhoto.astro';
+import Button from '@components/Button.astro';
+import SectionLabel from '@components/SectionLabel.astro';
+
+/**
+ * Homepage section for one page: label, large text and a link.
+ * @prop {string} href - target page
+ * @prop {string} label - uppercase label, e.g. "EXPERIENCE"
+ * @prop {string} title - page title, used as link text
+ * @prop {string} text - one sentence about the page
+ * @prop {'pure-white' | 'parchment'} [tone='pure-white'] - background, sections alternate
+ * @prop {{ src: string, alt: string }} [image] - photo of characters below the label
+ */
+const { href, label, title, text, tone = 'pure-white', image } = Astro.props;
+---
+
+<section class="page-section" data-tone={tone}>
+  <div class="container section-grid">
+    <div class="section-aside">
+      <SectionLabel variant="outlined">{label}</SectionLabel>
+      {image && <AsciiPhoto src={image.src} alt={image.alt} />}
+    </div>
+    <div class="section-body">
+      <h2 class="section-text">{text}</h2>
+      <Button href={href}>{title}</Button>
+    </div>
+  </div>
+</section>
+
+<style>
+  .page-section {
+    padding-block: var(--spacing-80);
+  }
+
+  /* The label gets the other white tone than the section, so it stands out. */
+  .page-section[data-tone='pure-white'] {
+    --label-fill: var(--color-parchment);
+    background: var(--color-pure-white);
+  }
+
+  .page-section[data-tone='parchment'] {
+    --label-fill: var(--color-pure-white);
+    background: var(--color-parchment);
+  }
+
+  .section-grid {
+    display: grid;
+    gap: var(--spacing-32);
+  }
+
+  .section-aside {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-32);
+  }
+
+  .section-body {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-32);
+  }
+
+  /* looks like the h1 of the page, but only one h1 exists per page */
+  .section-text {
+    font-size: var(--text-display);
+    line-height: var(--leading-display);
+  }
+
+  @media (min-width: 768px) {
+    .section-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+</style>

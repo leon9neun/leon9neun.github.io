@@ -1,14 +1,158 @@
 ---
-import { SITE } from '@lib/site.js';
+import { SITE, NAV, HOME } from '@lib/site.js';
 
+import AsciiGlobe from '@components/AsciiGlobe.astro';
+import AsciiReveal from '@components/AsciiReveal.astro';
+import Button from '@components/Button.astro';
+import DarkSection from '@components/DarkSection.astro';
+import PageSection from '@components/PageSection.astro';
+import RollingTitle from '@components/RollingTitle.astro';
+import SectionLabel from '@components/SectionLabel.astro';
 import BaseLayout from '@layouts/BaseLayout.astro';
+
+const cta = NAV.find((item) => item.role === 'cta');
+const pages = NAV.filter((item) => item.card);
+const hasPhoto = Boolean(HOME.photo);
 ---
 
-<BaseLayout
-  title={`${SITE.name} · Portfolio`}
-  description="[Ein Satz: wer, was, wofür die Seite da ist. Max. 155 Zeichen.]"
->
-  <div class="container">
-    <h1>{SITE.name}</h1>
-  </div>
+<BaseLayout title={`${SITE.name} · Portfolio`} description={HOME.metaDescription}>
+  <section class="hero">
+    <div class="hero-text">
+      <p class="hero-intro">{HOME.heroIntro}</p>
+      <RollingTitle>{HOME.heroMain}</RollingTitle>
+      {cta && <Button href={cta.href}>{cta.label}</Button>}
+    </div>
+    <div class="hero-panel">
+      <AsciiGlobe label={HOME.globeAlt} hint={HOME.globeHint} />
+    </div>
+  </section>
+
+  <DarkSection>
+    <h2 class="visually-hidden">About</h2>
+    <div class="about-block">
+      <SectionLabel variant="dark">{HOME.aboutLabel}</SectionLabel>
+      <div class="about">
+        <p class="about-text">{HOME.about}</p>
+        <div class="about-photo">
+          {
+            hasPhoto ? (
+              <AsciiReveal src={HOME.photo} alt={HOME.photoAlt} variant="dark" />
+            ) : (
+              <div class="photo-placeholder">[Foto]</div>
+            )
+          }
+        </div>
+      </div>
+    </div>
+  </DarkSection>
+
+  {
+    pages.map((item) => (
+      <PageSection
+        href={item.href}
+        label={item.card.label}
+        title={item.label}
+        text={item.card.text}
+        tone={item.card.tone}
+        image={item.card.image}
+      />
+    ))
+  }
 </BaseLayout>
+
+<style>
+  .hero {
+    display: grid;
+  }
+
+  .hero-text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-24);
+    padding: var(--spacing-64) var(--spacing-24);
+  }
+
+  .hero-intro {
+    font-size: var(--text-heading-sm);
+    line-height: var(--leading-heading-sm);
+    letter-spacing: var(--tracking-display);
+    color: var(--color-ash);
+  }
+
+  .hero-panel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-48) var(--spacing-24);
+    background: var(--color-parchment);
+  }
+
+  .about-block {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-32);
+  }
+
+  .about {
+    display: grid;
+    gap: var(--spacing-32);
+    width: 100%;
+  }
+
+  .about-text {
+    max-width: 60ch;
+    font-size: var(--text-body-lg);
+    line-height: var(--leading-body-lg);
+  }
+
+  .about-photo {
+    width: 100%;
+    max-width: 420px;
+  }
+
+  .photo-placeholder {
+    display: flex;
+    border-radius: var(--radius-cards);
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 4 / 5;
+    border: 1px solid var(--color-bone);
+    background: var(--color-pure-white);
+    color: var(--color-dim);
+    font-size: var(--text-body-sm);
+  }
+
+  /*
+   * The panel starts in the middle of the window and runs to the right edge, so the globe
+   * is centered at 3/4 of the page width. The first column is a spacer that lines the text
+   * column up with the 1200px container.
+   */
+  @media (min-width: 768px) {
+    .hero {
+      --hero-inset: max(var(--spacing-24), calc((100% - var(--page-max-width)) / 2 + var(--spacing-24)));
+      grid-template-columns: var(--hero-inset) calc(50% - var(--hero-inset)) 1fr;
+      min-height: calc(100svh - var(--spacing-64));
+    }
+
+    .hero-text {
+      grid-column: 2;
+      padding-left: 0;
+      padding-right: var(--spacing-48);
+    }
+
+    .hero-panel {
+      grid-column: 3;
+    }
+
+    .about {
+      grid-template-columns: 2fr 1fr;
+      align-items: start;
+    }
+
+    .about-photo {
+      justify-self: end;
+    }
+  }
+</style>

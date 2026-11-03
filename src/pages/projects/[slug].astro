@@ -1,0 +1,30 @@
+---
+import { getCollection, render } from 'astro:content';
+
+import { SITE } from '@lib/site.js';
+
+import ProjectDetail from '@components/ProjectDetail.astro';
+import BaseLayout from '@layouts/BaseLayout.astro';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects');
+  return projects.map((project) => ({ params: { slug: project.id }, props: { project } }));
+}
+
+const { project } = Astro.props;
+const { Content } = await render(project);
+---
+
+<BaseLayout title={`${project.data.title} · ${SITE.name}`} description={project.data.description}>
+  <div class="container page">
+    <ProjectDetail project={project}>
+      <Content />
+    </ProjectDetail>
+  </div>
+</BaseLayout>
+
+<style>
+  .page {
+    padding-block: var(--spacing-64);
+  }
+</style>

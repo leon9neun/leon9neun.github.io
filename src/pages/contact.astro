@@ -1,0 +1,80 @@
+---
+import { CONTACT_PAGE } from '@lib/site.js';
+
+import ContactLinks from '@components/ContactLinks.astro';
+import PageHeader from '@components/PageHeader.astro';
+import QrCode from '@components/QrCode.astro';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import AsciiPhoto from '@components/AsciiPhoto.astro';
+---
+
+<BaseLayout title={CONTACT_PAGE.metaTitle} description={CONTACT_PAGE.metaDescription}>
+  <div class="container page">
+    <PageHeader
+      label={CONTACT_PAGE.label}
+      heading={CONTACT_PAGE.heading}
+      text={CONTACT_PAGE.text}
+    >
+    </PageHeader>
+
+    <div class="contact-grid">
+      <div class="contact-photo">
+        <AsciiPhoto src={CONTACT_PAGE.image.src} alt={CONTACT_PAGE.image.alt} />
+      </div>
+      <section aria-labelledby="links-heading">
+        <h2 id="links-heading" class="visually-hidden">Links</h2>
+        <ContactLinks />
+        <QrCode caption={CONTACT_PAGE.qrCaption} />
+      </section>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .page {
+    display: flex;
+    flex-direction: column;
+    gap: var(--section-gap);
+    padding-block: var(--spacing-64);
+  }
+
+  /* same gap as between the links, so the QR code reads as the fourth card */
+  .contact-grid section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-16);
+  }
+
+  .contact-grid {
+    display: grid;
+    gap: var(--spacing-24);
+    align-items: start;
+  }
+
+  @media (min-width: 768px) {
+    .contact-grid {
+      grid-template-columns: 2fr 1fr;
+      align-items: stretch;
+    }
+
+    /*
+     * The photo adds no height of its own, so the row is as tall as the links section.
+     * The script sets the canvas size inline from the photo's ratio, !important overrides it,
+     * object-fit crops the photo to the row.
+     */
+    .contact-photo {
+      position: relative;
+    }
+
+    .contact-photo :global(.ascii-photo) {
+      position: absolute;
+      inset: 0;
+    }
+
+    .contact-photo :global(.photo-canvas) {
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: cover;
+    }
+  }
+</style>

@@ -1,0 +1,115 @@
+---
+// Vertical timeline for a dark surface (Aubergine Black). Put TimelineItem components in the slot.
+---
+
+<div class="timeline" data-component="timeline">
+  <span class="timeline-progress" data-timeline-line aria-hidden="true"></span>
+  <ol class="timeline-list">
+    <slot />
+  </ol>
+</div>
+
+<style>
+  .timeline {
+    position: relative;
+  }
+
+  .timeline::before,
+  .timeline-progress {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: calc(var(--spacing-8) - 0.5px);
+    width: 1px;
+  }
+
+  .timeline::before {
+    bottom: 0;
+    background: var(--color-dim);
+  }
+
+  .timeline-progress {
+    height: 0;
+    background: var(--color-pure-white);
+    transition: height 0.3s ease;
+  }
+
+  .timeline-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-48);
+    padding-left: var(--spacing-48);
+  }
+</style>
+
+<script>
+  // A station counts as reached once its top is above this line (share of the window height).
+  const ACTIVE_LINE = 0.45;
+
+  function initTimeline(root) {
+    const line = root.querySelector('[data-timeline-line]');
+    const items = [...root.querySelectorAll('[data-timeline-item]')];
+    if (!line || items.length === 0) return;
+
+    let activeItem = null;
+    let frameId = 0;
+
+    window.addEventListener('scroll', requestUpdate, { passive: true });
+    window.addEventListener('resize', requestUpdate);
+    window.addEventListener('pagehide', cleanup);
+    update();
+
+    function requestUpdate() {
+      if (frameId !== 0) return;
+      frameId = requestAnimationFrame(() => {
+        frameId = 0;
+        update();
+      });
+    }
+
+    function update() {
+      const nextItem = findActiveItem();
+      if (nextItem !== activeItem) setActive(nextItem);
+      else updateLine();
+    }
+
+    // The last station above the line is active. At the very top of the page it is the first
+    // station, at the very bottom the last one, even if they never get to the line.
+    function findActiveItem() {
+      if (window.scrollY <= 1) return items[0];
+      const isAtBottom =
+        window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 1;
+      if (isAtBottom) return items[items.length - 1];
+
+      const lineY = window.innerHeight * ACTIVE_LINE;
+      let found = items[0];
+      items.forEach((item) => {
+        if (item.getBoundingClientRect().top <= lineY) found = item;
+      });
+      return found;
+    }
+
+    function setActive(item) {
+      activeItem = item;
+      items.forEach((candidate) => {
+        candidate.dataset.state = candidate === item ? 'active' : 'inactive';
+      });
+      updateLine();
+    }
+
+    function updateLine() {
+      const dot = activeItem.querySelector('[data-timeline-dot]');
+      if (!dot) return;
+      const dotCenter = dot.getBoundingClientRect().top + dot.offsetHeight / 2;
+      line.style.height = `${dotCenter - root.getBoundingClientRect().top}px`;
+    }
+
+    function cleanup() {
+      cancelAnimationFrame(frameId);
+      window.removeEventListener('scroll', requestUpdate);
+      window.removeEventListener('resize', requestUpdate);
+    }
+  }
+
+  document.querySelectorAll('[data-component="timeline"]').forEach(initTimeline);
+</script>

@@ -1,8 +1,10 @@
 ---
 import { SITE } from '@lib/site.js';
 
+import CopyEmail from '@components/CopyEmail.astro';
+
 /**
- * @prop {'list' | 'compact'} [variant='list'] - 'list' shows labels and mail, 'compact' only LinkedIn and GitHub
+ * @prop {'list' | 'compact'} [variant='list'] - 'list' shows labels and mail (as CopyEmail), 'compact' only LinkedIn and GitHub
  */
 const { variant = 'list' } = Astro.props;
 
@@ -19,13 +21,17 @@ const visibleLinks = variant === 'compact' ? links.filter((link) => link.isExter
     visibleLinks.map((link) => (
       <li>
         {variant === 'list' && <span class="link-label">{link.label}</span>}
-        <a
-          href={link.href}
-          target={link.isExternal ? '_blank' : undefined}
-          rel={link.isExternal ? 'noopener noreferrer' : undefined}
-        >
-          {variant === 'list' && link.isExternal ? link.href : link.text}
-        </a>
+        {variant === 'list' && !link.isExternal ? (
+          <CopyEmail />
+        ) : (
+          <a
+            href={link.href}
+            target={link.isExternal ? '_blank' : undefined}
+            rel={link.isExternal ? 'noopener noreferrer' : undefined}
+          >
+            {variant === 'list' && link.isExternal ? link.href : link.text}
+          </a>
+        )}
       </li>
     ))
   }

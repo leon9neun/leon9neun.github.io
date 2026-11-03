@@ -1,0 +1,39 @@
+---
+/**
+ * Core element of the design: a small rhombus (see "Raute" in docs/design.md).
+ * Takes the text color. The fill of the outlined variant comes from --diamond-fill.
+ * @prop {'filled' | 'outlined'} [variant='filled']
+ * @prop {number} [size=8] - width and height in px, 8 (inline) or 16 (timeline)
+ */
+const { variant = 'filled', size = 8 } = Astro.props;
+---
+
+<svg
+  class="diamond"
+  data-variant={variant}
+  width={size}
+  height={size}
+  viewBox="0 0 8 8"
+  aria-hidden="true"
+  focusable="false"
+>
+  <path d="M4 0l4 4-4 4-4-4z"></path>
+</svg>
+
+<style>
+  .diamond {
+    flex: none;
+    overflow: visible;
+  }
+
+  .diamond path {
+    fill: currentColor;
+  }
+
+  .diamond[data-variant='outlined'] path {
+    fill: var(--diamond-fill, transparent);
+    stroke: currentColor;
+    stroke-width: 1px;
+    vector-effect: non-scaling-stroke;
+  }
+</style>

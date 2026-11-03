@@ -1,0 +1,101 @@
+---
+import { formatPeriod } from '@lib/formatDate.js';
+
+import Diamond from '@components/Diamond.astro';
+import Tag from '@components/Tag.astro';
+
+/**
+ * @prop {object} station - entry from the "experience" collection
+ * @prop {boolean} [isActive=false] - initial state, the Timeline script updates it while scrolling
+ */
+const { station, isActive = false } = Astro.props;
+const { title, role, start, end, description, projects } = station.data;
+const hasProjects = projects.length > 0;
+---
+
+<li class="timeline-item" data-timeline-item data-state={isActive ? 'active' : 'inactive'}>
+  <span class="timeline-dot" data-timeline-dot aria-hidden="true">
+    <Diamond variant="outlined" size={16} />
+  </span>
+  <Tag variant="date">{formatPeriod(start, end)}</Tag>
+  <h3 class="item-title">{title}</h3>
+  <p class="item-role">{role}</p>
+  <p class="item-text">{description}</p>
+  {
+    hasProjects && (
+      <ul class="item-projects">
+        {projects.map((project) => (
+          <li>{project}</li>
+        ))}
+      </ul>
+    )
+  }
+</li>
+
+<style>
+  .timeline-item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--element-gap);
+  }
+
+  /* The timeline sits on Aubergine Black: light diamond, the inactive one is filled with the
+     surface color, so it hides the line behind it. */
+  .timeline-dot {
+    --diamond-fill: var(--color-aubergine-black);
+    position: absolute;
+    top: var(--spacing-8);
+    left: calc(-1 * var(--spacing-48));
+    display: flex;
+    width: var(--spacing-16);
+    height: var(--spacing-16);
+    color: var(--color-pure-white);
+  }
+
+  .timeline-item[data-state='active'] .timeline-dot {
+    --diamond-fill: var(--color-pure-white);
+  }
+
+  .item-title {
+    color: var(--color-ash);
+  }
+
+  .timeline-item[data-state='active'] .item-title {
+    color: var(--color-pure-white);
+  }
+
+  .item-role {
+    font-size: var(--text-body-sm);
+    line-height: var(--leading-body-sm);
+    color: var(--color-ash);
+  }
+
+  .item-text {
+    max-width: 60ch;
+    color: var(--color-bone);
+  }
+
+  .item-projects {
+    display: flex;
+    flex-direction: column;
+    gap: var(--element-gap);
+    max-width: 60ch;
+    font-size: var(--text-body-sm);
+    line-height: var(--leading-body-sm);
+    color: var(--color-bone);
+  }
+
+  .item-projects li {
+    position: relative;
+    padding-left: var(--spacing-24);
+  }
+
+  .item-projects li::before {
+    content: '–';
+    position: absolute;
+    left: 0;
+    color: var(--color-ash);
+  }
+</style>

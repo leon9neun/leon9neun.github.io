@@ -1,0 +1,71 @@
+---
+/**
+ * The h1 of a page. Plays the Rolling Letters animation on load (see docs Funktionen).
+ * Without JavaScript or with prefers-reduced-motion the text is shown as it is.
+ * @prop {'top' | 'bottom'} [startFrom='top'] - side the letters slide in from
+ * @prop {'start' | 'center' | 'end' | 'random'} [staggerFrom='start'] - where the wave starts
+ */
+const { startFrom = 'top', staggerFrom = 'start' } = Astro.props;
+---
+
+<h1
+  class="rolling-title"
+  data-component="rolling-letters"
+  data-start-from={startFrom}
+  data-stagger-from={staggerFrom}><slot /></h1>
+
+<style>
+  /* Hide the text until the script has split it, so it does not flash before the animation.
+     If the script never runs, the text appears after 1.5s. */
+  @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+    .rolling-title:not([data-state]) {
+      visibility: hidden;
+      animation: rolling-title-fallback 0s 1.5s forwards;
+    }
+  }
+
+  @keyframes rolling-title-fallback {
+    to {
+      visibility: visible;
+    }
+  }
+
+  /* The letters start outside of the heading and are clipped while they move.
+     The extra padding keeps descenders from being cut off. */
+  .rolling-title[data-state='rolling'] {
+    overflow: hidden;
+    padding-block: 0.1em;
+    margin-block: -0.1em;
+  }
+
+  .rolling-title :global([data-roll-word]),
+  .rolling-title :global([data-roll-char]) {
+    display: inline-block;
+  }
+
+  .rolling-title :global([data-roll-word]) {
+    white-space: nowrap;
+  }
+</style>
+
+<script>
+  import { prefersReducedMotion } from '@lib/motion.js';
+  import { rollLetters } from '@lib/rollingLetters.js';
+
+  async function initRollingLetters(root) {
+    try {
+      if (prefersReducedMotion()) return;
+      root.dataset.state = 'rolling';
+      await rollLetters(root, {
+        startFrom: root.dataset.startFrom,
+        staggerFrom: root.dataset.staggerFrom,
+      });
+    } catch (error) {
+      if (import.meta.env.DEV) console.error(error);
+    } finally {
+      root.dataset.state = 'ready';
+    }
+  }
+
+  document.querySelectorAll('[data-component="rolling-letters"]').forEach(initRollingLetters);
+</script>

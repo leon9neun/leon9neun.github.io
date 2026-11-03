@@ -1,18 +1,40 @@
 ---
+import Diamond from '@components/Diamond.astro';
+
 /**
- * @prop {'light' | 'dark'} [variant='light'] - 'dark' is used inside DarkSection
+ * Uppercase label with a diamond in front.
+ * @prop {'light' | 'dark' | 'outlined'} [variant='light'] - 'dark' is used inside DarkSection,
+ *   'outlined' has a 1px Ink Black border and takes its fill from --label-fill (Pure White by default)
  */
 const { variant = 'light' } = Astro.props;
 ---
 
-<span class="section-label" data-variant={variant}><slot /></span>
+<span class="section-label-row" data-variant={variant}>
+  <Diamond />
+  <span class="section-label" data-variant={variant}><slot /></span>
+</span>
 
 <style>
+  .section-label-row {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-8);
+  }
+
+  .section-label-row[data-variant='light'],
+  .section-label-row[data-variant='outlined'] {
+    color: var(--color-ink-black);
+  }
+
+  .section-label-row[data-variant='dark'] {
+    color: var(--color-pure-white);
+  }
+
   .section-label {
     display: inline-block;
     padding: 2px var(--spacing-8);
     border-radius: var(--radius-badges);
-    font-size: var(--text-caption);
+    font-size: var(--text-body-sm);
     line-height: var(--leading-caption);
     letter-spacing: var(--tracking-label);
     text-transform: uppercase;
@@ -21,6 +43,12 @@ const { variant = 'light' } = Astro.props;
   .section-label[data-variant='light'] {
     background: var(--color-pure-white);
     color: var(--color-ink-black);
+  }
+
+  .section-label[data-variant='outlined'] {
+    background: var(--label-fill, var(--color-pure-white));
+    color: var(--color-ink-black);
+    border: 1px solid var(--color-ink-black);
   }
 
   .section-label[data-variant='dark'] {

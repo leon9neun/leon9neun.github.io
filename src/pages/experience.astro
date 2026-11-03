@@ -1,0 +1,101 @@
+---
+import { getCollection } from 'astro:content';
+
+import { EXPERIENCE_PAGE } from '@lib/site.js';
+
+import AsciiPhoto from '@components/AsciiPhoto.astro';
+import DarkSection from '@components/DarkSection.astro';
+import PageHeader from '@components/PageHeader.astro';
+import Tag from '@components/Tag.astro';
+import Timeline from '@components/Timeline.astro';
+import TimelineItem from '@components/TimelineItem.astro';
+import BaseLayout from '@layouts/BaseLayout.astro';
+
+const stations = (await getCollection('experience')).sort((a, b) =>
+  b.data.start.localeCompare(a.data.start),
+);
+---
+
+<BaseLayout title={EXPERIENCE_PAGE.metaTitle} description={EXPERIENCE_PAGE.metaDescription}>
+  <div class="container intro">
+    <PageHeader
+      label={EXPERIENCE_PAGE.label}
+      heading={EXPERIENCE_PAGE.heading}
+      text={EXPERIENCE_PAGE.text}
+    />
+  </div>
+
+  <DarkSection>
+    <h2 class="visually-hidden">Timeline</h2>
+    <div class="timeline-layout">
+      <Timeline>
+        {stations.map((station, index) => <TimelineItem station={station} isActive={index === 0} />)}
+      </Timeline>
+    </div>
+  </DarkSection>
+
+  <section class="container skills" aria-labelledby="skills-heading">
+    <h2 id="skills-heading" class="visually-hidden">Skills</h2>
+    <ul class="skill-groups">
+      {
+        EXPERIENCE_PAGE.skills.map(({ group, items }) => (
+          <li class="skill-group">
+            <h3 class="group-title">{group}</h3>
+            <ul class="skill-tags">
+              {items.map((item) => (
+                <li>
+                  <Tag variant="technology">{item}</Tag>
+                </li>
+              ))}
+            </ul>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+</BaseLayout>
+
+<style>
+  .intro,
+  .skills {
+    padding-block: var(--spacing-64);
+  }
+
+  .timeline-layout {
+    display: grid;
+    gap: var(--spacing-48);
+    align-items: start;
+  }
+
+  .skill-groups {
+    display: grid;
+    gap: var(--spacing-32);
+  }
+
+  .skill-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-16);
+  }
+
+  .group-title {
+    font-size: var(--text-body-md);
+    line-height: var(--leading-body-md);
+  }
+
+  .skill-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--element-gap);
+  }
+
+  @media (min-width: 768px) {
+    .timeline-layout {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .skill-groups {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>

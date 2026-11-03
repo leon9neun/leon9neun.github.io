@@ -34,13 +34,17 @@ const isLink = Boolean(href);
     align-items: center;
     justify-content: center;
     min-height: 44px;
-    border: 1px solid var(--color-ink-black);
+    border: 1px solid var(--button-ink, var(--color-ink-black));
     background: transparent;
-    color: var(--color-ink-black);
+    color: var(--button-ink, var(--color-ink-black));
     font-family: inherit;
     font-weight: var(--font-weight-regular);
     text-decoration: none;
     cursor: pointer;
+  }
+
+  .button[hidden] {
+    display: none;
   }
 
   .button[data-variant='pill'] {
@@ -58,8 +62,8 @@ const isLink = Boolean(href);
   }
 
   .button:hover {
-    background: var(--color-ink-black);
-    color: var(--color-parchment);
+    background: var(--button-ink, var(--color-ink-black));
+    color: var(--button-paper, var(--color-parchment));
   }
 
   .button:disabled,

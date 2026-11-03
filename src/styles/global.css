@@ -89,6 +89,38 @@ button {
   padding-inline: var(--spacing-24);
 }
 
+/* Markdown body of a project file (project detail page and expanded project card). */
+.prose {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-48);
+  max-width: 60ch;
+}
+
+.prose h2 {
+  margin-bottom: var(--spacing-16);
+  font-size: var(--text-heading-sm);
+  line-height: var(--leading-heading-sm);
+}
+
+.prose ul {
+  display: flex;
+  flex-direction: column;
+  gap: var(--element-gap);
+}
+
+.prose li {
+  position: relative;
+  padding-left: var(--spacing-24);
+}
+
+.prose li::before {
+  content: '–';
+  position: absolute;
+  left: 0;
+  color: var(--color-dim);
+}
+
 .visually-hidden {
   position: absolute;
   width: 1px;

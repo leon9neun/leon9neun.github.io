@@ -1,0 +1,57 @@
+---
+import RollingTitle from '@components/RollingTitle.astro';
+import SectionLabel from '@components/SectionLabel.astro';
+
+/**
+ * Intro at the top of a page: label on the left, the page's h1 and a short text on the right.
+ * @prop {string} label - uppercase label, e.g. "EXPERIENCE"
+ * @prop {string} heading - content of the h1
+ * @prop {string} [text] - one or two sentences below the heading
+ * @slot - optional content (e.g. a photo) below the label, in the left column
+ */
+const { label, heading, text } = Astro.props;
+---
+
+<header class="page-header">
+  <div class="header-label">
+    <SectionLabel>{label}</SectionLabel>
+    <slot />
+  </div>
+  <div class="header-body">
+    <RollingTitle>{heading}</RollingTitle>
+    {text && <p class="header-text">{text}</p>}
+  </div>
+</header>
+
+<style>
+  .page-header {
+    display: grid;
+    gap: var(--spacing-24);
+  }
+
+  .header-label {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-24);
+  }
+
+  .header-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-16);
+  }
+
+  .header-text {
+    max-width: 60ch;
+    font-size: var(--text-body-lg);
+    line-height: var(--leading-body-lg);
+  }
+
+  @media (min-width: 768px) {
+    .page-header {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--spacing-32);
+    }
+  }
+</style>
