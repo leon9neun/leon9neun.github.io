@@ -36,7 +36,7 @@ export const NAV = Object.freeze([
     role: 'link',
     card: {
       label: 'Erfahrung',
-      text: 'Erfahrhrungen vom Studium und beruflichen Erfahrungen',
+      text: 'Erfahrhrungen vom Studium, Beruf.',
       tone: 'pure-white',
     },
   },
@@ -46,7 +46,7 @@ export const NAV = Object.freeze([
     role: 'link',
     card: {
       label: 'Projekte',
-      text: 'Eigene Projekte und Projekte aus Studium und Beruf',
+      text: 'Auswahl an Projekten, die ich in meiner Freizeit entwickelt habe.',
       tone: 'parchment',
     },
   },

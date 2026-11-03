@@ -18,7 +18,7 @@ home:
   photo: "/images/bew_bild_2.jpg"
   photoAlt: "[Leon Kraschewski, Porträt]"
   aboutLabel: "Über mich"
-  about: "Wirtschaftsinformatikstudent, Werkstudent Interessen: Data Science, eigene Projekte."
+  about: "Wirtschaftsinformatikstudent, Werkstudent | Interessen: Data Science, Softwareentwicklung"
   globeAlt: "Drehbarer Globus"
   globeHint: "Dreh mich!"
 ---
